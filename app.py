@@ -127,14 +127,15 @@ def azure_translate(user_input, to_language):
     if to_language is None:
         return "Please select a language"
     else:
-        apikey = os.getenv("API_KEY", "你的_AZURE_API_KEY")
-        endpoint = os.getenv("ENDPOINT", "你的_AZURE_ENDPOINT")
-        region = os.getenv("REGION", "你的_AZURE_REGION")
+        apikey = os.getenv("API_KEY")
+        endpoint = os.getenv("ENDPOINT")
+        region = os.getenv("REGION")
         credential = AzureKeyCredential(apikey)
         text_translator = TextTranslationClient(credential=credential, endpoint=endpoint, region=region)
 
         try:
             response = text_translator.translate(body=[user_input], to_language=[to_language])
+            print(response)
             translation = response[0] if response else None
             if translation:
                 detected_language = translation.detected_language
@@ -144,6 +145,7 @@ def azure_translate(user_input, to_language):
                 for translated_text in translation.translations:
                     result += f"翻譯成: '{translated_text.to}'\n結果: '{translated_text.text}'"
                 return result
+            
         except HttpResponseError as exception:
             if exception.error is not None:
                 print(f"Error Code: {exception.error.code}")
@@ -152,4 +154,5 @@ def azure_translate(user_input, to_language):
 
 # 啟動 Flask 應用程式
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run()
+    
